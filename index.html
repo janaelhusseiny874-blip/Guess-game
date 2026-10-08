@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guess My Number!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        /* ستايل عام */
+        body {
+            background-color: #222;
+            /* لون خلفية داكن */
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            margin: 20px;
+            user-select: none;
+            position: relative;
+        }
+
+        /* زر إعادة اللعب */
+        #againBtn {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background: white;
+            color: black;
+            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-weight: 900;
+            font-size: 14px;
+            padding: 14px 24px;
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid white;
+        }
+
+        #againBtn:hover {
+            background: #eee;
+        }
+
+        /* نص النطاق أعلى يمين */
+        #rangeText {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            font-family: 'Press Start 2P', cursive;
+            font-weight: 900;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        /* العنوان الكبير */
+        h1 {
+            font-weight: 900;
+            font-size: 28px;
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 0;
+            user-select: none;
+        }
+
+        /* خط يفصل العنوان عن الرقم */
+        .divider {
+            border-top: 2px solid white;
+            width: 100%;
+            margin: 20px auto 40px auto;
+        }
+
+        /* المربع الذي يعرض الرقم */
+        #numberBox {
+            font-size: 40px;
+            font-weight: 900;
+            background-color: white;
+            color: black;
+            text-align: center;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            margin: 0 auto 40px auto;
+            user-select: none;
+            border: 2px solid white;
+            box-sizing: border-box;
+        }
+
+        /* زر "Check" */
+        #checkBtn {
+            font-family: 'Press Start 2P', cursive;
+            font-weight: 900;
+            font-size: 14px;
+            padding: 14px 24px;
+            cursor: pointer;
+            background-color: white;
+            color: black;
+            border: none;
+            margin-top: 20px;
+            display: block;
+            /* margin-left: auto; */
+            margin: 30px 225px;
+            border: 2px solid white;
+            user-select: none;
+        }
+
+        #checkBtn:hover {
+            background-color: #eee;
+        }
+
+        /* حقل الإدخال */
+        #guessInput {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 40px;
+            font-weight: 900;
+            width: 120px;
+            height: 80px;
+            text-align: center;
+            color: white;
+            background-color: transparent;
+            border: 2px solid white;
+            outline: none;
+            margin: 0 230px;
+            display: block;
+            user-select: text;
+        }
+
+        /* معلومات الحالة على اليمين */
+        .info-text {
+            position: absolute;
+            top: 300px;
+            right: 50px;
+            font-size: 14px;
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.7em;
+            text-align: left;
+            user-select: none;
+            color: white;
+            font-weight: 900;
+        }
+
+        /* checkbox وتقسيم الأسطر */
+        .info-text span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* تصميم checkbox */
+        #lessStatus {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="againBtn">Again!</button>
+
+    <div id="rangeText">&lt;Between 1 and 20&gt;</div>
+
+    <h1>Give Me A Number!</h1>
+
+    <hr class="divider" />
+
+    <div id="numberBox">?</div>
+
+    <input type="number" id="guessInput" min="1" max="20" value="20" />
+
+    <button id="checkBtn">Check!</button>
+
+    <div class="info-text">
+        <span><input type="checkbox" id="lessStatus" disabled /> Less</span>
+        <span>💯 Score: <span id="score">3</span></span>
+        <span>🥇 Highscore: <span id="highscore">0</span></span>
+    </div>
+
+    <script>
+        const againBtn = document.getElementById("againBtn");
+        const checkBtn = document.getElementById("checkBtn");
+        const guessInput = document.getElementById("guessInput");
+        const numberBox = document.getElementById("numberBox");
+        const lessStatus = document.getElementById("lessStatus");
+        const scoreEl = document.getElementById("score");
+        const highscoreEl = document.getElementById("highscore");
+
+        let secretNumber = Math.floor(Math.random() * 20) + 1;
+        let score = 20;
+        let highscore = 0;
+
+        function resetGame() {
+            score = 3;
+            scoreEl.textContent = score;
+            lessStatus.checked = false;
+            guessInput.value = 20;
+            numberBox.textContent = "?";
+            secretNumber = Math.floor(Math.random() * 20) + 1;
+        }
+
+        againBtn.addEventListener("click", () => {
+            resetGame();
+        });
+
+        checkBtn.addEventListener("click", () => {
+            const guess = Number(guessInput.value);
+
+            if (!guess || guess < 1 || guess > 20) {
+                alert("Please enter a number between 1 and 20.");
+                return;
+            }
+
+            if (score <= 0) {
+                alert("Game over! Click 'Again!' to restart.");
+                return;
+            }
+
+            if (guess === secretNumber) {
+                numberBox.textContent = ("Correct! You guessed the number!");
+                if (score > highscore) {
+                    highscore = score;
+                    highscoreEl.textContent = highscore;
+                }
+                score = 0;
+                scoreEl.textContent = score;
+            } else {
+                score--;
+                scoreEl.textContent = score;
+                lessStatus.checked = guess > secretNumber;
+                numberBox.textContent = "?";
+                if (score === 0) {
+                    alert("You lost! The correct number was " + secretNumber);
+                }
+            }
+        });
+
+        // بدء اللعبة لأول مرة
+        resetGame();
+
+    </script>
+
+</body>
+
+</html>
